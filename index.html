@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SITTA UT - Portal Utama Sistem Informasi Bahan Ajar</title>
+
+  <!-- CSS Utama -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    /* Styling khusus landing dashboard */
+    .hero-section {
+      background: linear-gradient(135deg, #0f3d7c 0%, #1e40af 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 3rem 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 300px;
+      height: 300px;
+      background: rgba(251, 191, 36, 0.12);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 780px;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .module-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: #93c5fd;
+    }
+
+    .module-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin: 1.25rem 0 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.88rem;
+      color: #334155;
+    }
+
+    .feature-item i {
+      color: #10b981;
+      font-size: 0.9rem;
+    }
+
+    .badge-pill {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fef08a;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ====================================================================
+       NAVIGASI MENU UTAMA
+       ==================================================================== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-logo">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-text">
+          <h1>SITTA UNIVERSITAS TERBUKA</h1>
+          <p>Sistem Informasi Tiras & Transaksi Bahan Ajar</p>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li>
+          <a href="index.html" class="nav-link active">
+            <i class="fa-solid fa-house"></i> Beranda
+          </a>
+        </li>
+        <li>
+          <a href="stok.html" class="nav-link">
+            <i class="fa-solid fa-boxes-stacked"></i> Stok Bahan Ajar
+          </a>
+        </li>
+        <li>
+          <a href="tracking.html" class="nav-link">
+            <i class="fa-solid fa-truck-fast"></i> Tracking DO
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-user">
+        <i class="fa-solid fa-user-circle"></i> Mahasiswa UT
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====================================================================
+       MAIN CONTENT
+       ==================================================================== -->
+  <main class="main-content">
+
+    <!-- Hero Banner -->
+    <section class="hero-section">
+      <div class="badge-pill">
+        <i class="fa-solid fa-code"></i> TUGAS PRAKTIK 2 - STSI4209 PEMROGRAMAN BERBASIS WEB
+      </div>
+      <h2 class="hero-title">
+        Aplikasi Pemesanan & Distribusi Bahan Ajar SITTA UT
+      </h2>
+      <p class="hero-desc">
+        Aplikasi berbasis <strong>Vue.js Framework</strong> yang mengimplementasikan arsitektur modular,
+        data binding reaktif (one-way & two-way), conditional rendering, computed caching, watchers data,
+        dan validasi formulir interaktif untuk operasional tiras bahan ajar Universitas Terbuka.
+      </p>
+
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="stok.html" class="btn btn-warning" style="font-weight: 700; color: #09264f;">
+          <i class="fa-solid fa-boxes-stacked"></i> Buka Stok Bahan Ajar
+        </a>
+        <a href="tracking.html" class="btn btn-secondary" style="font-weight: 700;">
+          <i class="fa-solid fa-truck-fast"></i> Buka Tracking DO
+        </a>
+      </div>
+    </section>
+
+    <!-- Pilihan 2 Halaman Web Utama Sesuai Ketentuan Soal -->
+    <div
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.75rem; margin-bottom: 2.5rem;">
+
+      <!-- Kartu Modul 1: Stok Bahan Ajar -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon" style="background: #e0f2fe; color: #0284c7;">
+            <i class="fa-solid fa-boxes-stacked"></i>
+          </div>
+          <div class="badge badge-primary" style="margin-bottom: 0.5rem; background: #e0f2fe; color: #0369a1;">
+            Halaman 1 (WAJIB)
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 0.5rem;">
+            Stok Bahan Ajar
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+            Menampilkan dan mengelola persediaan stok buku mata kuliah untuk seluruh UPBJJ / UT Daerah di Indonesia
+            beserta batas aman persediaan (safety stock) dan lokasi rak gudang.
+          </p>
+
+          <ul class="feature-list">
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Daftar stok lengkap: Kode, Judul, Kategori, UT-Daerah, Rak, Qty, Safety, Harga</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Status stok: <strong>Aman</strong> (Hijau), <strong>Menipis</strong> (Orange),
+                <strong>Kosong</strong> (Merah)</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Filter bertingkat (Dependent Options) UT-Daerah & Kategori</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Filter Re-Order stok kritis (qty &lt; safety & qty = 0)</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Sorting data dinamis (Judul, Stok, Harga) dengan Vue Computed Caching</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Formulir tambah & edit data stok dengan validasi interaktif</span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="stok.html" class="btn btn-primary" style="width: 100%;">
+          <i class="fa-solid fa-arrow-right"></i> Masuk ke Halaman Stok
+        </a>
+      </div>
+
+      <!-- Kartu Modul 2: Tracking Delivery Order -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon" style="background: #fef3c7; color: #d97706;">
+            <i class="fa-solid fa-truck-fast"></i>
+          </div>
+          <div class="badge" style="margin-bottom: 0.5rem; background: #fef3c7; color: #b45309;">
+            Halaman 2 (WAJIB)
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 0.5rem;">
+            Tracking Delivery Order (DO)
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+            Melacak status pengiriman paket pesanan bahan ajar mahasiswa dan pembuatan Delivery Order baru secara
+            otomatis
+            dengan integrasi data paket dan perhitungan tagihan.
+          </p>
+
+          <ul class="feature-list">
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Nomor DO tergenerate otomatis: <strong>DO[Tahun]-[Sequence]</strong> (misal DO2025-001)</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Input NIM, Nama, Ekspedisi, dan Tanggal Kirim (Date local time)</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Pemilihan Paket Bahan Ajar dengan detail buku otomatis muncul di bawah &lt;select&gt;</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Total tagihan otomatis sinkron dengan harga paket</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Riwayat timeline checkpoint pengiriman (Interaktif)</span>
+            </li>
+            <li class="feature-item">
+              <i class="fa-solid fa-check"></i>
+              <span>Pencarian live DO berdasarkan Nomor DO, NIM, atau Nama Mahasiswa</span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="tracking.html" class="btn btn-warning" style="width: 100%; color: #09264f;">
+          <i class="fa-solid fa-arrow-right"></i> Masuk ke Halaman Tracking
+        </a>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025/2026 Universitas Terbuka - SITTA (Sistem Informasi Tiras & Transaksi Bahan Ajar). Tugas Praktik 2
+      Pemrograman Berbasis Web (STSI4209).</p>
+  </footer>
+
+</body>
+
+</html>

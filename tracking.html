@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SITTA UT - Tracking Delivery Order (DO)</title>
+  
+  <!-- CSS Utama -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+  <!-- ====================================================================
+       NAVIGASI MENU UTAMA
+       ==================================================================== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-logo">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-text">
+          <h1>SITTA UNIVERSITAS TERBUKA</h1>
+          <p>Sistem Informasi Tiras & Transaksi Bahan Ajar</p>
+        </div>
+      </a>
+      
+      <ul class="nav-links">
+        <li>
+          <a href="index.html" class="nav-link">
+            <i class="fa-solid fa-house"></i> Beranda
+          </a>
+        </li>
+        <li>
+          <a href="stok.html" class="nav-link">
+            <i class="fa-solid fa-boxes-stacked"></i> Stok Bahan Ajar
+          </a>
+        </li>
+        <li>
+          <a href="tracking.html" class="nav-link active">
+            <i class="fa-solid fa-truck-fast"></i> Tracking DO
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-user">
+        <i class="fa-solid fa-user-circle"></i> Mahasiswa UT
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====================================================================
+       VUE.JS APP CONTAINER
+       ==================================================================== -->
+  <div id="app" class="main-content">
+    
+    <!-- Header Halaman -->
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">
+          <i class="fa-solid fa-truck-fast" style="color: var(--primary);"></i>
+          Tracking Delivery Order (DO) Bahan Ajar
+        </h2>
+        <p class="page-subtitle">
+          Pantau status pengiriman paket bahan ajar mahasiswa dan buat pesanan Delivery Order (DO) baru secara otomatis.
+        </p>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" @click="resetTrackingDataKeAwal" title="Kembalikan ke data awal template tugas">
+          <i class="fa-solid fa-rotate-left"></i> Reset Template Awal
+        </button>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         STATISTIK RINGKASAN TRACKING
+         ==================================================================== -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon primary">
+          <i class="fa-solid fa-file-invoice"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value">{{ totalDOTersimpan }}</div>
+          <div class="stat-label">Total Pesanan DO</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon warning">
+          <i class="fa-solid fa-truck-moving"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value" style="color: #d97706;">{{ totalDalamPerjalanan }}</div>
+          <div class="stat-label">Dalam Perjalanan</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon success">
+          <i class="fa-solid fa-box-open"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-value" style="color: #059669;">{{ totalTerkirim }}</div>
+          <div class="stat-label">Paket Terkirim</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         LAYOUT 2 KOLOM: FORM INPUT DO & DAFTAR TRACKING TIMELINE
+         ==================================================================== -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; align-items: start;">
+      
+      <!-- ================================================================
+           KOLOM KIRI: FORMULIR INPUT DELIVERY ORDER (DO) BARU
+           Sesuai Spesifikasi Soal Tugas 2:
+           1. Nomor DO: auto-generated (DO + Tahun Berjalan + Sequence)
+           2. NIM: manual
+           3. Nama: manual
+           4. Ekspedisi: dari pengirimanList
+           5. Paket Bahan Ajar: <select>, muncul detail isi paket di bawahnya
+           6. Tanggal Kirim: manual / fungsi Date
+           7. Total Harga: diambil dari array paket -> harga
+           ================================================================ -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i>
+            Input Delivery Order (DO) Baru
+          </div>
+        </div>
+
+        <form @submit.prevent="tambahDeliveryOrder">
+          
+          <!-- 1. Nomor DO (Tergenerate Otomatis) -->
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="nomorDO">
+              <i class="fa-solid fa-barcode"></i> Nomor DO (Tergenerate Otomatis):
+            </label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input 
+                type="text" 
+                id="nomorDO" 
+                class="form-control" 
+                :value="generatedDONumber" 
+                readonly 
+                style="background-color: #f1f5f9; font-weight: 800; font-family: monospace; color: var(--primary);"
+              >
+              <span class="badge badge-upbjj" style="white-space: nowrap;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Auto
+              </span>
+            </div>
+            <small style="font-size: 0.74rem; color: var(--text-muted);">
+              Format penomoran: DO[Tahun Berjalan]-[Nomor Urut Sequence]
+            </small>
+          </div>
+
+          <!-- 2. NIM & 3. Nama Mahasiswa (Input Manual) -->
+          <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="inputNIM">
+                NIM <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="inputNIM" 
+                class="form-control" 
+                placeholder="cth: 041234567" 
+                maxlength="12"
+                v-model="formDO.nim"
+              >
+              <small v-if="errorDO.nim" style="color: #dc2626; font-size: 0.75rem;">
+                {{ errorDO.nim }}
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputNama">
+                Nama Mahasiswa <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="inputNama" 
+                class="form-control" 
+                placeholder="Nama Lengkap" 
+                v-model="formDO.nama"
+              >
+              <small v-if="errorDO.nama" style="color: #dc2626; font-size: 0.75rem;">
+                {{ errorDO.nama }}
+              </small>
+            </div>
+          </div>
+
+          <!-- 4. Ekspedisi Pengiriman -->
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="selectEkspedisi">
+              <i class="fa-solid fa-truck"></i> Pilihan Ekspedisi Pengiriman: <span class="required">*</span>
+            </label>
+            <select id="selectEkspedisi" class="form-select" v-model="formDO.ekspedisi">
+              <option v-for="eksp in pengirimanList" :key="eksp.kode" :value="eksp.nama">
+                {{ eksp.nama }}
+              </option>
+            </select>
+          </div>
+
+          <!-- 5. Paket Bahan Ajar (Elemen <select>) -->
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="selectPaket">
+              <i class="fa-solid fa-box-archive"></i> Paket Bahan Ajar: <span class="required">*</span>
+            </label>
+            <select id="selectPaket" class="form-select" v-model="formDO.paket">
+              <option value="" disabled>-- Pilih Paket Bahan Ajar --</option>
+              <option v-for="p in paket" :key="p.kode" :value="p.kode">
+                {{ p.kode }} - {{ p.nama }} ({{ formatRupiah(p.harga) }})
+              </option>
+            </select>
+            <small v-if="errorDO.paket" style="color: #dc2626; font-size: 0.75rem;">
+              {{ errorDO.paket }}
+            </small>
+
+            <!-- ==============================================================
+                 DETAIL ISI PAKET BAHAN AJAR (Muncul di bawah elemen <select>)
+                 Sesuai ketentuan soal tugas:
+                 "Setelah memilih paket, akan muncul detail isi paket bahan ajar
+                 tersebut di bawah elemen <select> untuk memberikan informasi"
+                 ============================================================== -->
+            <div class="package-preview" v-if="selectedPaketDetail">
+              <div class="package-preview-title">
+                <span><i class="fa-solid fa-circle-info"></i> Isi Paket: <strong>{{ selectedPaketDetail.nama }}</strong></span>
+                <span class="badge badge-aman">{{ formatRupiah(selectedPaketDetail.harga) }}</span>
+              </div>
+              <div style="font-size: 0.8rem; color: #1e3a8a; margin-bottom: 0.3rem;">
+                Bahan Ajar / Buku Materi Pokok yang disertakan:
+              </div>
+              <div class="package-item-list">
+                <span 
+                  v-for="(buku, idx) in selectedPaketDetail.isi" 
+                  :key="idx" 
+                  class="code-pill"
+                  style="background: #ffffff; border-color: #93c5fd; color: #1e40af;"
+                >
+                  <i class="fa-solid fa-book-bookmark"></i> {{ buku }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Tanggal Kirim (Manual atau Fungsi Date local time) -->
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="inputTanggalKirim">
+              <i class="fa-solid fa-calendar-days"></i> Tanggal Kirim: <span class="required">*</span>
+            </label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input 
+                type="date" 
+                id="inputTanggalKirim" 
+                class="form-control" 
+                v-model="formDO.tanggalKirim"
+              >
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-sm" 
+                @click="setTanggalHariIni"
+                title="Gunakan tanggal hari ini (Local Time)"
+              >
+                <i class="fa-solid fa-clock"></i> Hari Ini
+              </button>
+            </div>
+            <small v-if="errorDO.tanggalKirim" style="color: #dc2626; font-size: 0.75rem;">
+              {{ errorDO.tanggalKirim }}
+            </small>
+          </div>
+
+          <!-- 7. Total Harga (Diambil Otomatis dari Array of Objects paket -> harga) -->
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label class="form-label" for="inputTotalHarga">
+              <i class="fa-solid fa-rupiah-sign"></i> Total Harga (Otomatis dari Paket):
+            </label>
+            <div style="position: relative;">
+              <input 
+                type="text" 
+                id="inputTotalHarga" 
+                class="form-control" 
+                :value="formatRupiah(formDO.totalHarga)" 
+                readonly 
+                style="background-color: #f1f5f9; font-weight: 800; font-size: 1.15rem; color: #059669;"
+              >
+            </div>
+            <small style="font-size: 0.74rem; color: var(--text-muted);">
+              Total tagihan disesuaikan otomatis dari harga paket bahan ajar yang dipilih.
+            </small>
+          </div>
+
+          <!-- Tombol Aksi Form -->
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" @click="resetFormDO">
+              <i class="fa-solid fa-arrow-rotate-left"></i> Reset Form
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-paper-plane"></i> Tambah Delivery Order
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- ================================================================
+           KOLOM KANAN: TRACKING STATUS PENGIRIMAN & TIMELINE
+           ================================================================ -->
+      <div>
+        
+        <!-- Search & Filter Bar Tracking -->
+        <div class="card" style="margin-bottom: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label" for="searchDO">
+              <i class="fa-solid fa-magnifying-glass"></i> Cari Status Pengiriman DO:
+            </label>
+            <input 
+              type="text" 
+              id="searchDO" 
+              class="form-control" 
+              placeholder="Cari berdasarkan Nomor DO (misal DO2025-001), NIM, atau Nama..."
+              v-model="searchQuery"
+            >
+          </div>
+          <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span>Ditemukan: <strong>{{ filteredTrackingList.length }}</strong> paket DO</span>
+            <span v-if="searchQuery">Pencarian aktif: "{{ searchQuery }}"</span>
+          </div>
+        </div>
+
+        <!-- Daftar Tab Pilihan Nomor DO -->
+        <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+          <button 
+            v-for="item in filteredTrackingList" 
+            :key="item.nomorDO"
+            type="button"
+            class="btn btn-sm"
+            :class="item.nomorDO === activeDOKey ? 'btn-primary' : 'btn-secondary'"
+            @click="selectDO(item.nomorDO)"
+            style="display: flex; flex-direction: column; align-items: flex-start; padding: 0.5rem 0.85rem;"
+          >
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              <strong>{{ item.nomorDO }}</strong>
+              <span 
+                class="badge" 
+                :class="item.status === 'Terkirim' ? 'badge-aman' : 'badge-menipis'" 
+                style="font-size: 0.65rem; padding: 0.15rem 0.4rem;"
+              >
+                {{ item.status }}
+              </span>
+            </div>
+            <span style="font-size: 0.72rem; opacity: 0.85;">{{ item.nama }} ({{ item.nim }})</span>
+          </button>
+        </div>
+
+        <!-- DETAIL TRACKING AKTIF DENGAN TIMELINE RIWAYAT -->
+        <div class="card" v-if="activeTrackingDetail">
+          <div class="card-header">
+            <div>
+              <span class="code-pill" style="font-size: 0.95rem; color: var(--primary);">
+                {{ activeTrackingDetail.nomorDO }}
+              </span>
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-top: 0.35rem;">
+                {{ activeTrackingDetail.nama }}
+              </h3>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">
+                NIM: <strong>{{ activeTrackingDetail.nim }}</strong> | Tanggal Kirim: <strong>{{ formatTanggalIndo(activeTrackingDetail.tanggalKirim) }}</strong>
+              </div>
+            </div>
+
+            <!-- Status Pengiriman Badge -->
+            <div>
+              <span 
+                class="badge" 
+                :class="activeTrackingDetail.status === 'Terkirim' ? 'badge-aman' : 'badge-menipis'"
+                style="font-size: 0.85rem; padding: 0.4rem 0.8rem;"
+              >
+                <i class="fa-solid fa-truck" v-if="activeTrackingDetail.status !== 'Terkirim'"></i>
+                <i class="fa-solid fa-check-double" v-else></i>
+                {{ activeTrackingDetail.status }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Rincian Pesanan -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; background: #f8fafc; padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.25rem;">
+            <div>
+              <span style="font-size: 0.74rem; color: var(--text-muted); display: block;">Paket Bahan Ajar:</span>
+              <strong style="font-size: 0.88rem; color: var(--primary);">{{ activeTrackingDetail.paket }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.74rem; color: var(--text-muted); display: block;">Layanan Ekspedisi:</span>
+              <strong style="font-size: 0.88rem; color: var(--text-main);">{{ activeTrackingDetail.ekspedisi }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.74rem; color: var(--text-muted); display: block;">Total Biaya:</span>
+              <strong style="font-size: 0.92rem; color: #059669;">{{ formatRupiah(activeTrackingDetail.total) }}</strong>
+            </div>
+          </div>
+
+          <!-- Riwayat Perjalanan Timeline -->
+          <div>
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+              <i class="fa-solid fa-route" style="color: var(--accent);"></i>
+              Riwayat Perjalanan Pengiriman (Timeline)
+            </h4>
+
+            <div class="timeline">
+              <div 
+                v-for="(checkpoint, cIdx) in activeTrackingDetail.perjalanan" 
+                :key="cIdx"
+                class="timeline-item"
+                :class="{ 'active': cIdx === activeTrackingDetail.perjalanan.length - 1 }"
+              >
+                <div class="timeline-marker"></div>
+                <div class="timeline-time">
+                  <i class="fa-regular fa-clock"></i> {{ checkpoint.waktu }}
+                </div>
+                <div class="timeline-content">
+                  {{ checkpoint.keterangan }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interaksi Tambah Checkpoint Status Tracking Baru -->
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-color);">
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-location-crosshairs"></i> Perbarui Status / Tambah Checkpoint Baru:
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Contoh: Paket sampai di Hub Sortir Tujuan..." 
+                v-model="newCheckpoint"
+                style="flex: 1; min-width: 220px;"
+                @keyup.enter="tambahCheckpoint"
+              >
+              <button type="button" class="btn btn-secondary btn-sm" @click="tambahCheckpoint">
+                <i class="fa-solid fa-plus"></i> Tambah Checkpoint
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-success btn-sm" 
+                v-if="activeTrackingDetail.status !== 'Terkirim'"
+                @click="updateStatusDO('Terkirim')"
+              >
+                <i class="fa-solid fa-check"></i> Tandai Terkirim
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- State Jika Tidak Ada Hasil Pencarian -->
+        <div class="card" v-else style="text-align: center; padding: 2.5rem 1rem;">
+          <i class="fa-solid fa-magnifying-glass" style="font-size: 2.5rem; color: var(--text-light); margin-bottom: 0.75rem;"></i>
+          <h4 style="font-weight: 700; color: var(--text-main);">Data DO Tidak Ditemukan</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">Tidak ada nomor DO yang sesuai dengan kata kunci pencarian Anda.</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Toast Notification (v-show) -->
+    <div class="toast-container" v-show="toast.show">
+      <div class="toast" :class="'toast-' + toast.type">
+        <i class="fa-solid fa-circle-info" v-if="toast.type === 'info'" style="color: #3b82f6;"></i>
+        <i class="fa-solid fa-circle-check" v-else-if="toast.type === 'success'" style="color: #10b981;"></i>
+        <i class="fa-solid fa-triangle-exclamation" v-else-if="toast.type === 'warning'" style="color: #f59e0b;"></i>
+        <i class="fa-solid fa-circle-xmark" v-else style="color: #ef4444;"></i>
+        <span>{{ toast.message }}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025/2026 Universitas Terbuka - SITTA (Sistem Informasi Tiras & Transaksi Bahan Ajar). Tugas Praktik 2 Pemrograman Berbasis Web (STSI4209).</p>
+  </footer>
+
+  <!-- Vue.js CDN (Framework yang disepakati untuk Tugas Praktik 2) -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  
+  <!-- Logika Aplikasi Tracking DO -->
+  <script src="js/tracking-app.js"></script>
+</body>
+</html>
